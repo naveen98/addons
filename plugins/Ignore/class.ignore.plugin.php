@@ -66,10 +66,10 @@ class IgnorePlugin extends Gdn_Plugin {
       switch ($Sender->Mapper->Version) {
          case '1.0':
             $Sender->Mapper->AddMap(array(
-               'ignore/list'           => 'dashboard/profile/ignore',
-               'ignore/add'            => 'dashboard/profile/ignore/add',
-               'ignore/remove'         => 'dashboard/profile/ignore/remove',
-               'ignore/restrict'       => 'dashboard/profile/ignore/restrict'
+               'ignore/list'           => 'profile/ignore',
+               'ignore/add'            => 'profile/ignore/add',
+               'ignore/remove'         => 'profile/ignore/remove',
+               'ignore/restrict'       => 'profile/ignore/restrict'
             ), NULL, array(
                'ignore/list'           => array('IgnoreList', 'IgnoreLimit', 'IgnoreRestricted'),
                'ignore/add'            => array('Success'),
@@ -572,14 +572,17 @@ class IgnorePlugin extends Gdn_Plugin {
    protected function AddIgnore($ForUserID, $IgnoreUserID) {
       $this->SetUserMeta($ForUserID, "Blocked.User.{$IgnoreUserID}", date('Y-m-d H:i:s'));
 
-      // Remove from conversations
-      $Conversations = $this->IgnoreConversations($IgnoreUserID, $ForUserID);
-      Gdn::SQL()->Delete('UserConversation', array(
-         'UserID'          => $ForUserID,
-         'ConversationID'  => $Conversations
-      ));
-      $conversationModel = new ConversationModel();
-      $conversationModel->countUnread($ForUserID, true);
+      // Since the Conversation application can be turned off, check first if the ConversationModel is present.
+      if (class_exists('ConversationModel')) {
+         // Remove from conversations
+         $Conversations = $this->IgnoreConversations($IgnoreUserID, $ForUserID);
+         Gdn::SQL()->Delete('UserConversation', array(
+             'UserID' => $ForUserID,
+             'ConversationID' => $Conversations
+         ));
+         $conversationModel = new ConversationModel();
+         $conversationModel->countUnread($ForUserID, true);
+      }
    }
 
    protected function RemoveIgnore($ForUserID, $IgnoreUserID) {
@@ -668,6 +671,11 @@ class IgnorePlugin extends Gdn_Plugin {
 
       // Noone can ignore themselves
       if ($IgnoreUserID == $SessionUserID) return self::IGNORE_SELF;
+
+      // Avoid a call to the database if the Conversation application is turned off.
+      if (!class_exists('ConversationModel')) {
+         return array();
+      }
 
       // Get ignore user's conversation IDs
       $IgnoreConversations = Gdn::SQL()
