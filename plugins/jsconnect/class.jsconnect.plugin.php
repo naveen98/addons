@@ -462,7 +462,7 @@ class JsConnectPlugin extends Gdn_Plugin {
                 echo '<pre>';
                 var_dump([
                     'Get' => $Get,
-                    'URL' => Url('/entry/connect/jsconnect?'.http_build_query($Get)),
+                    'URL' => htmlentities(Url('/entry/connect/jsconnect?'.http_build_query($Get))),
                     'clientID' => $client_id,
                     'connectURL' => self::connectUrl($Provider, TRUE),
                     'provider' => $Provider,

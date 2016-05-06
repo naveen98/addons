@@ -32,7 +32,9 @@ if (jsUrl) {
                }
             }
             $('#Form_JsConnect').val(connectData);
-            $('#Form_JsConnect-Connect').submit();
+            if (!window.location.search.match(/DEBUG_SSO/)) {
+               $('#Form_JsConnect-Connect').submit();
+            }
          } else {
             if (!data['error'] && data['name']) {
                var parts = $.jsconnectStrip(jsUrl);
