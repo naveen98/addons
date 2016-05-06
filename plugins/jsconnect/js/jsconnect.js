@@ -48,10 +48,12 @@ if (jsUrl) {
          }
       },
       error: function(xhr, errorText) {
-         var error = $.param({ error: errorText });
-         $('#Form_JsConnect').val(error);
-         $('#Form_JsConnect-Connect').attr('action', gdn.url('/entry/jsconnect/error'));
-         $('#Form_JsConnect-Connect').submit();
+         if (!window.location.search.match(/DEBUG_SSO/)) {
+            var error = $.param({error: errorText});
+            $('#Form_JsConnect').val(error);
+            $('#Form_JsConnect-Connect').attr('action', gdn.url('/entry/jsconnect/error'));
+            $('#Form_JsConnect-Connect').submit();
+         }
       }
    });
 }
