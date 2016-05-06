@@ -458,6 +458,19 @@ class JsConnectPlugin extends Gdn_Plugin {
             $Sender->Form->AddHidden('JsConnect', '');
             $Sender->Form->AddHidden('Target', $Target);
 
+            if (isset($_GET['DEBUG_SSO'])) {
+                var_dump([
+                    'Get' => $Get,
+                    'URL' => Url('/entry/connect/jsconnect?'.http_build_query($Get)),
+                    'clientID' => $client_id,
+                    'connectURL' => self::connectUrl($Provider, TRUE),
+                    'provider' => $Provider,
+                ]);
+                if (isset($_GET['DEBUG_SSO_DIE'])) {
+                    die();
+                }
+            }
+
             $Sender->MasterView = 'empty';
             $Sender->Render('JsConnect', '', 'plugins/jsconnect');
         }
