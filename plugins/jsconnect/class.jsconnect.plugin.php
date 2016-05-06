@@ -459,12 +459,14 @@ class JsConnectPlugin extends Gdn_Plugin {
             $Sender->Form->AddHidden('Target', $Target);
 
             if (isset($_GET['DEBUG_SSO'])) {
+                echo '<pre>';
                 var_dump([
                     'Get' => $Get,
                     'URL' => Url('/entry/connect/jsconnect?'.http_build_query($Get)),
                     'clientID' => $client_id,
                     'connectURL' => self::connectUrl($Provider, TRUE),
                     'provider' => $Provider,
+                    'target' => $Target,
                 ]);
                 if (isset($_GET['DEBUG_SSO_DIE'])) {
                     die();
